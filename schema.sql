@@ -11,4 +11,5 @@ CREATE TABLE IF NOT EXISTS Pages (
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
+CREATE INDEX IF NOT EXISTS idx_pages_name ON Pages(name);
 INSERT INTO Pages (name, content) VALUES ('Welcome Page', 'Welcome to our application! This is a sample page with some content.');

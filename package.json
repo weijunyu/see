@@ -10,11 +10,12 @@
     "preview": "npm run build && vite preview",
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
-    "schema:sync:local": "wrangler d1 execute see-d1-dev --local --file=./schema.sql",
+    "schema:sync:dev": "wrangler d1 execute see-d1-dev --local --file=./schema.sql",
     "schema:sync:prod": "wrangler d1 execute see-d1-dev --remote --file=./schema.sql"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/react-router": "^1.124.0",
     "hono": "^4.8.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
