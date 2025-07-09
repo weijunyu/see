@@ -18,7 +18,12 @@ app.get("/api/query/", async (c) => {
 app.get("/api/recents/", async (c) => {
   const fetchCount = c.req.query("count") ?? 10;
   const { results } = await c.env.DB.prepare(
-    "select * from pages order by updated_at desc limit ?"
+    `select *,
+      datetime(created_at, 'unixepoch') as created_at,
+      datetime(updated_at, 'unixepoch') as updated_at
+      from pages
+      order by updated_at desc
+      limit ?`
   )
     .bind(fetchCount)
     .all();
@@ -29,7 +34,11 @@ app.get("/api/recents/", async (c) => {
 app.get("/api/pages/:name", async (c) => {
   const name = c.req.param("name");
   const { results } = await c.env.DB.prepare(
-    "SELECT * FROM Pages WHERE name = ?"
+    `select *,
+      datetime(created_at, 'unixepoch') as created_at,
+      datetime(updated_at, 'unixepoch') as updated_at
+      from pages
+      where name = ?`
   )
     .bind(name)
     .all();
@@ -52,7 +61,9 @@ app.post("/api/pages/:name", async (c) => {
 
   try {
     const { results } = await c.env.DB.prepare(
-      "INSERT INTO Pages (name, content) VALUES (?, ?) RETURNING *"
+      `insert into pages (name, content) values (?, ?) returning *,
+      datetime(created_at, 'unixepoch') as created_at,
+      datetime(updated_at, 'unixepoch') as updated_at`
     )
       .bind(name, content)
       .all();
