@@ -15,6 +15,17 @@ app.get("/api/query/", async (c) => {
   return c.json(results);
 });
 
+app.get("/api/recents/", async (c) => {
+  const fetchCount = c.req.query("count") ?? 10;
+  const { results } = await c.env.DB.prepare(
+    "select * from pages order by updated_at desc limit ?"
+  )
+    .bind(fetchCount)
+    .all();
+
+  return c.json(results);
+});
+
 app.get("/api/pages/:name", async (c) => {
   const name = c.req.param("name");
   const { results } = await c.env.DB.prepare(

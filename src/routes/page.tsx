@@ -1,3 +1,5 @@
+import { createRoute } from "@tanstack/react-router";
+import { rootRoute } from "./root";
 import { useEffect, useState } from "react";
 
 interface Page {
@@ -8,21 +10,17 @@ interface Page {
   updated_at: string;
 }
 
-function App() {
+function PageComponent() {
+  const { name } = pageRoute.useParams();
   const [page, setPage] = useState<Page | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [pageName, setPageName] = useState("");
   const [newContent, setNewContent] = useState("");
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    const path = window.location.pathname;
-    const name = path.slice(1); // Remove the leading slash
-
     if (name) {
-      setPageName(name);
       // Fetch page by name
       fetch(`/api/pages/${encodeURIComponent(name)}`)
         .then((res) => {
@@ -44,11 +42,8 @@ function App() {
           setError(err.message);
           setLoading(false);
         });
-    } else {
-      // Root path - show default content
-      setLoading(false);
     }
-  }, []);
+  }, [name]);
 
   const handleCreatePage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,16 +51,13 @@ function App() {
 
     setCreating(true);
     try {
-      const response = await fetch(
-        `/api/pages/${encodeURIComponent(pageName)}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ content: newContent }),
-        }
-      );
+      const response = await fetch(`/api/pages/${encodeURIComponent(name)}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: newContent }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to create page");
@@ -103,7 +95,7 @@ function App() {
       <div className="p-8">
         <h1 className="text-3xl font-bold mb-4">Create New Page</h1>
         <p className="text-gray-600 mb-4">
-          Page "{pageName}" doesn't exist. Would you like to create it?
+          Page "{name}" doesn't exist. Would you like to create it?
         </p>
 
         <form onSubmit={handleCreatePage} className="space-y-4">
@@ -163,23 +155,13 @@ function App() {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold underline mb-4">Hello there!</h1>
-      <section>
-        <h2 className="text-xl font-semibold mb-2">Welcome!</h2>
-        <p>Try visiting a page by going to /{`{page-name}`} in the URL.</p>
-        <p>
-          For example:{" "}
-          <a href="/Welcome Page" className="text-blue-600 hover:underline">
-            /Welcome Page
-          </a>
-        </p>
-        <p className="mt-2 text-gray-600">
-          If the page doesn't exist, you'll be able to create it with your own
-          content!
-        </p>
-      </section>
+      <div className="text-center">Page not found</div>
     </div>
   );
 }
 
-export default App;
+export const pageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/$name",
+  component: PageComponent,
+});
