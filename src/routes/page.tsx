@@ -2,6 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "./root";
 import { useEffect, useState } from "react";
 import { PageCreate } from "../components/PageCreate";
+import { PageView } from "../components/PageView";
 
 interface Page {
   id: number;
@@ -81,22 +82,7 @@ function PageComponent() {
   }
 
   if (page) {
-    return (
-      <div className="p-8">
-        <div className="mb-4">
-          <p className="text-gray-600 text-sm">
-            Created: {new Date(page.created_at).toLocaleString()}
-          </p>
-          <p className="text-gray-600 text-sm">
-            Updated: {new Date(page.updated_at).toLocaleString()}
-          </p>
-        </div>
-
-        <div className="max-w-none">
-          <p className="whitespace-pre-wrap">{page.content}</p>
-        </div>
-      </div>
-    );
+    return <PageView page={page} />;
   }
 
   return (

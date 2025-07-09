@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { Page } from "../types";
+import { formatForDisplay } from "../lib/dates";
 
 interface Props {
   pages: Page[];
@@ -18,7 +19,7 @@ export function PageList({ pages }: Props) {
             {page.name}
           </Link>
           <p className="text-gray-600 text-sm mt-1">
-            Updated: {new Date(page.updated_at).toLocaleString()}
+            Updated: {formatForDisplay(page.updated_at)}
           </p>
           <p className="text-gray-800 mt-2 line-clamp-3">
             {page.content.substring(0, 1000)}

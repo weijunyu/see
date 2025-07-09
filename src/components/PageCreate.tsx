@@ -52,7 +52,6 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
             id="content"
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
-            placeholder="Hello there!"
             className="w-full h-48 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
