@@ -56,19 +56,11 @@ function PageComponent() {
   }
 
   if (loading) {
-    return (
-      <div className="p-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <div className="text-center">Loading...</div>;
   }
 
   if (error) {
-    return (
-      <div className="p-8">
-        <div className="text-center text-red-600">Error: {error}</div>
-      </div>
-    );
+    return <div className="text-center text-red-600">Error: {error}</div>;
   }
 
   if (showCreateForm) {
@@ -85,11 +77,7 @@ function PageComponent() {
     return <PageView page={page} />;
   }
 
-  return (
-    <div className="p-8">
-      <div className="text-center">Page not found</div>
-    </div>
-  );
+  return <div className="text-center">Page not found</div>;
 }
 
 export const pageRoute = createRoute({

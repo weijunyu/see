@@ -25,23 +25,15 @@ function Index() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8">
-        <div className="text-center">Loading...</div>
-      </div>
-    );
+    return <div className="text-center">Loading...</div>;
   }
 
   if (error) {
-    return (
-      <div className="p-8">
-        <div className="text-center text-red-600">Error: {error}</div>
-      </div>
-    );
+    return <div className="text-center text-red-600">Error: {error}</div>;
   }
 
   return (
-    <div className="p-8">
+    <>
       <section>
         <p>Try visiting a page by going to /{`{page-name}`} in the URL.</p>
         <p>
@@ -62,7 +54,7 @@ function Index() {
           <PageList pages={pages} />
         </section>
       ) : null}
-    </div>
+    </>
   );
 }
 

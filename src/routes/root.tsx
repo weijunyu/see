@@ -3,14 +3,16 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 function Root() {
   return (
-    <main className="max-w-[800px] mx-auto">
+    <main className="max-w-[800px] min-h-screen mx-auto">
       <div className="p-2 flex gap-2">
         <Link to="/">Home</Link>
       </div>
 
       <hr />
 
-      <Outlet />
+      <div className="p-8">
+        <Outlet />
+      </div>
       <TanStackRouterDevtools />
     </main>
   );

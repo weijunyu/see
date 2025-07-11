@@ -42,38 +42,36 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
   };
 
   return (
-    <div className="p-8">
-      <form onSubmit={handleCreatePage} className="space-y-4">
-        <div>
-          <label htmlFor="content" className="block text-sm font-medium mb-2">
-            Content:
-          </label>
-          <textarea
-            id="content"
-            value={newContent}
-            onChange={(e) => setNewContent(e.target.value)}
-            className="w-full h-48 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+    <form onSubmit={handleCreatePage} className="space-y-4">
+      <div>
+        <label htmlFor="content" className="block text-sm font-medium mb-2">
+          Add your content below. It will be available at /{name}
+        </label>
+        <textarea
+          id="content"
+          value={newContent}
+          onChange={(e) => setNewContent(e.target.value)}
+          className="w-full h-48 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
 
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={creating || !newContent.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {creating ? "Creating..." : "Create"}
-          </button>
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={creating || !newContent.trim()}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {creating ? "Creating..." : "Create"}
+        </button>
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }

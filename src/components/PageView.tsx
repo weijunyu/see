@@ -7,7 +7,7 @@ interface Props {
 
 export function PageView({ page }: Props) {
   return (
-    <div className="p-8">
+    <>
       <div className="mb-4">
         <p className="text-gray-600 text-sm">
           Created: {formatForDisplay(page.created_at)}
@@ -20,6 +20,6 @@ export function PageView({ page }: Props) {
       <div className="max-w-none">
         <p className="whitespace-pre-wrap">{page.content}</p>
       </div>
-    </div>
+    </>
   );
 }
