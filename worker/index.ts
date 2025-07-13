@@ -52,7 +52,7 @@ app.get("/api/pages/:name", async (c) => {
 
 app.post("/api/pages/:name", async (c) => {
   const name = c.req.param("name");
-  const body = await c.req.json();
+  const body: { content: string } = await c.req.json();
   const { content } = body;
 
   if (!content) {
@@ -69,7 +69,8 @@ app.post("/api/pages/:name", async (c) => {
       .all();
 
     return c.json(results[0], 201);
-  } catch (error) {
+  } catch (err) {
+    console.error("Error creating page:", err);
     return c.json({ error: "Failed to create page" }, 500);
   }
 });

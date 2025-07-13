@@ -1,20 +1,12 @@
-import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "./root";
+import { pageRoute } from "../../routes.tsx";
 import { useEffect, useState } from "react";
-import { PageCreate } from "../components/PageCreate";
-import { PageView } from "../components/PageView";
+import type { Page as PageType } from "../../types/index.ts";
+import { PageCreate } from "../PageCreate.tsx";
+import { PageView } from "../PageView.tsx";
 
-interface Page {
-  id: number;
-  name: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-}
-
-function PageComponent() {
+export function Page() {
   const { name } = pageRoute.useParams();
-  const [page, setPage] = useState<Page | null>(null);
+  const [page, setPage] = useState<PageType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -32,20 +24,20 @@ function PageComponent() {
           }
           return res.json();
         })
-        .then((data: Page) => {
+        .then((data: PageType) => {
           if (data) {
             setPage(data);
             setLoading(false);
           }
         })
         .catch((err) => {
-          setError(err.message);
+          setError(err instanceof Error ? err.message : "Failed to load page");
           setLoading(false);
         });
     }
   }, [name]);
 
-  function onPageCreated(page: Page) {
+  function onPageCreated(page: PageType) {
     setPage(page);
     setShowCreateForm(false);
   }
@@ -79,9 +71,3 @@ function PageComponent() {
 
   return <div className="text-center">Page not found</div>;
 }
-
-export const pageRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/$name",
-  component: PageComponent,
-});

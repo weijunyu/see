@@ -1,11 +1,9 @@
-import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "./root";
 import { useEffect, useState } from "react";
+import type { Page } from "../../types";
 import { Link } from "@tanstack/react-router";
-import type { Page } from "../types";
-import { PageList } from "../components/PageList";
+import { PageList } from "../PageList";
 
-function Index() {
+export function Index() {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +15,7 @@ function Index() {
         setPages(data);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(err instanceof Error ? err.message : "Failed to load pages");
       })
       .finally(() => {
         setLoading(false);
@@ -57,9 +55,3 @@ function Index() {
     </>
   );
 }
-
-export const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
-  component: Index,
-});

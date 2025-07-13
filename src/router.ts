@@ -1,7 +1,5 @@
 import { createRouter } from "@tanstack/react-router";
-import { rootRoute } from "./routes/root";
-import { indexRoute } from "./routes";
-import { pageRoute } from "./routes/page";
+import { rootRoute, indexRoute, pageRoute } from "./routes.tsx";
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -11,34 +11,36 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
   const [newContent, setNewContent] = useState("");
   const [creating, setCreating] = useState(false);
 
-  const handleCreatePage = async (e: React.FormEvent) => {
+  const handleCreatePage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newContent.trim()) return;
 
-    setCreating(true);
-    try {
-      const response = await fetch(`/api/pages/${encodeURIComponent(name)}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: newContent }),
-      });
+    void (async () => {
+      setCreating(true);
+      try {
+        const response = await fetch(`/api/pages/${encodeURIComponent(name)}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content: newContent }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to create page");
+        if (!response.ok) {
+          throw new Error("Failed to create page");
+        }
+
+        const createdPage = (await response.json()) as Page;
+        onPageCreated(createdPage);
+        setNewContent("");
+      } catch (err) {
+        onPageCreateError(
+          err instanceof Error ? err.message : "Failed to create page"
+        );
+      } finally {
+        setCreating(false);
       }
-
-      const createdPage = await response.json();
-      onPageCreated(createdPage);
-      setNewContent("");
-    } catch (err) {
-      onPageCreateError(
-        err instanceof Error ? err.message : "Failed to create page"
-      );
-    } finally {
-      setCreating(false);
-    }
+    })();
   };
 
   return (
