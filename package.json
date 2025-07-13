@@ -11,7 +11,10 @@
     "deploy": "npm run build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "schema:sync:dev": "wrangler d1 execute see-d1-dev --local --file=./schema.sql",
-    "schema:sync:prod": "wrangler d1 execute see-d1-dev --remote --file=./schema.sql"
+    "schema:sync:prod": "wrangler d1 execute see-d1-dev --remote --file=./schema.sql",
+    "db:migrate:dev": "wrangler d1 migrations apply see-d1-dev --local",
+    "db:migrate:prod": "wrangler d1 migrations apply see-d1-dev --remote",
+    "wrangler": "wrangler"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",

@@ -52,8 +52,8 @@ app.get("/api/pages/:name", async (c) => {
 
 app.post("/api/pages/:name", async (c) => {
   const name = c.req.param("name");
-  const body: { content: string } = await c.req.json();
-  const { content } = body;
+  const body: { content: string; encrypted?: boolean } = await c.req.json();
+  const { content, encrypted = false } = body;
 
   if (!content) {
     return c.json({ error: "Content is required" }, 400);
@@ -61,11 +61,11 @@ app.post("/api/pages/:name", async (c) => {
 
   try {
     const { results } = await c.env.DB.prepare(
-      `insert into pages (name, content) values (?, ?) returning *,
+      `insert into pages (name, content, encrypted) values (?, ?, ?) returning id, name, content, encrypted,
       datetime(created_at, 'unixepoch') as created_at,
       datetime(updated_at, 'unixepoch') as updated_at`
     )
-      .bind(name, content)
+      .bind(name, content, encrypted)
       .all();
 
     return c.json(results[0], 201);
