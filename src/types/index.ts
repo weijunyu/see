@@ -2,7 +2,7 @@ export interface Page {
   id: number;
   name: string;
   content: string;
-  encrypted: boolean;
+  encrypted: 0 | 1;
   created_at: string;
   updated_at: string;
 }

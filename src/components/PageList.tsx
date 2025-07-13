@@ -19,7 +19,7 @@ export function PageList({ pages }: Props) {
             >
               {page.name}
             </Link>
-            {page.encrypted && <span className="text-sm ">🔒</span>}
+            {Boolean(page.encrypted) && <span className="text-sm ">🔒</span>}
           </span>
 
           <p className="text-gray-600 text-sm mt-1">

@@ -61,7 +61,7 @@ app.post("/api/pages/:name", async (c) => {
 
   try {
     const { results } = await c.env.DB.prepare(
-      `insert into pages (name, content, encrypted) values (?, ?, ?) returning id, name, content, encrypted,
+      `insert into pages (name, content, encrypted) values (?, ?, ?) returning *,
       datetime(created_at, 'unixepoch') as created_at,
       datetime(updated_at, 'unixepoch') as updated_at`
     )

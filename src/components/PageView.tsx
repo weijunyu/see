@@ -43,14 +43,14 @@ export function PageView({ page }: Props) {
         <p className="text-gray-600 text-sm">
           Updated: {formatForDisplay(page.updated_at)}
         </p>
-        {isEncrypted && (
+        {Boolean(isEncrypted) && (
           <p className="text-blue-600 text-sm font-medium">
             🔒 This page is password protected
           </p>
         )}
       </div>
 
-      {isEncrypted && decryptedContent === null ? (
+      {Boolean(isEncrypted) && decryptedContent == null ? (
         <div className="max-w-md">
           <form onSubmit={handleDecrypt} className="space-y-4">
             <div>
