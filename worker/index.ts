@@ -24,22 +24,60 @@ app.get("/api/", (c) => {
 });
 
 app.get("/api/pages/next-name", async (c) => {
-  const { results }: { results: { counter_value: number }[] } =
-    await c.env.DB.prepare(
-      `UPDATE appdata SET integer_value = integer_value + 1 
-     WHERE key = 'page_name_counter' 
-     RETURNING integer_value - 1 as counter_value`
-    ).all();
+  try {
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loops
 
-  if (results.length === 0) {
-    return c.json({ error: "No data found for page name counter" }, 500);
+    while (attempts < maxAttempts) {
+      // Get and increment counter
+      const { results }: { results: { counter_value: number }[] } =
+        await c.env.DB.prepare(
+          `UPDATE appdata SET integer_value = integer_value + 1 
+           WHERE key = 'page_name_counter' 
+           RETURNING integer_value - 1 as counter_value`
+        ).all();
+
+      const counterValue = results[0]["counter_value"];
+      const suggestedName = encodeBase26(counterValue);
+
+      // Check if page with this name already exists
+      const { results: existingPages } = await c.env.DB.prepare(
+        `SELECT id FROM pages WHERE name = ?`
+      )
+        .bind(suggestedName)
+        .all();
+
+      // If no conflict, return this suggestion
+      if (existingPages.length === 0) {
+        return c.json({ value: suggestedName });
+      }
+
+      attempts++;
+    }
+
+    // Fallback if we somehow hit max attempts
+    return c.json({ error: "Unable to generate unique page name" }, 500);
+  } catch (err) {
+    console.error(
+      JSON.stringify({
+        level: "error",
+        message: "Failed to get next page name",
+        error: {
+          name: err instanceof Error ? err.name : "Unknown",
+          message: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
+        },
+        context: {
+          endpoint: "/api/pages/next-name",
+          method: "GET",
+          requestId: c.req.header("cf-ray"),
+          userAgent: c.req.header("user-agent"),
+          timestamp: new Date().toISOString(),
+        },
+      })
+    );
+    return c.json({ error: "Failed to get next page name" }, 500);
   }
-
-  const counterValue = results[0]["counter_value"];
-
-  return c.json({
-    value: encodeBase26(counterValue),
-  });
 });
 
 app.get("/api/query/", async (c) => {
