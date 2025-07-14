@@ -6,8 +6,40 @@ export interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
+function encodeBase26(num: number): string {
+  if (num === 0) return "a";
+
+  let result = "";
+  let n = num;
+  while (n >= 0) {
+    result = String.fromCharCode(97 + (n % 26)) + result;
+    n = Math.floor(n / 26) - 1;
+    if (n < 0) break;
+  }
+  return result;
+}
+
 app.get("/api/", (c) => {
   return c.json({ name: "Hello!" });
+});
+
+app.get("/api/pages/next-name", async (c) => {
+  const { results }: { results: { counter_value: number }[] } =
+    await c.env.DB.prepare(
+      `UPDATE appdata SET integer_value = integer_value + 1 
+     WHERE key = 'page_name_counter' 
+     RETURNING integer_value - 1 as counter_value`
+    ).all();
+
+  if (results.length === 0) {
+    return c.json({ error: "No data found for page name counter" }, 500);
+  }
+
+  const counterValue = results[0]["counter_value"];
+
+  return c.json({
+    value: encodeBase26(counterValue),
+  });
 });
 
 app.get("/api/query/", async (c) => {

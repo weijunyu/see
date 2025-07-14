@@ -8,6 +8,10 @@ export function Index() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [suggestedPageName, setSuggestedPageName] = useState<string | null>(
+    null
+  );
+
   useEffect(() => {
     fetch("/api/recents/?count=10")
       .then((res) => res.json())
@@ -22,6 +26,20 @@ export function Index() {
       });
   }, []);
 
+  useEffect(() => {
+    fetch("/api/pages/next-name")
+      .then((res) => res.json())
+      .then((data: { value: string }) => {
+        setSuggestedPageName(data.value);
+      })
+      .catch(() => {
+        // swallow
+      })
+      .finally(() => {
+        // swallow
+      });
+  }, []);
+
   if (loading) {
     return <div className="text-center">Loading...</div>;
   }
@@ -33,17 +51,19 @@ export function Index() {
   return (
     <>
       <section>
-        <p>Try visiting a page by going to /{`{page-name}`} in the URL.</p>
-        <p>
-          For example:{" "}
-          <Link
-            to="/$name"
-            params={{ name: "Welcome Page" }}
-            className="text-blue-600 hover:underline"
-          >
-            /Welcome Page
-          </Link>
-        </p>
+        <p></p>
+        {suggestedPageName && (
+          <p className="flex gap-1 mt-2">
+            Add content to a new page:
+            <Link
+              to="/$name"
+              params={{ name: suggestedPageName }}
+              className="inline-block px-2  bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              /{suggestedPageName}
+            </Link>
+          </p>
+        )}
       </section>
 
       {pages.length > 0 ? (
