@@ -60,18 +60,6 @@ app.post("/api/pages/:name", async (c) => {
   }
 
   try {
-    // Check if page already exists
-    const { results: existingPages } = await c.env.DB.prepare(
-      `select id from pages where name = ?`
-    )
-      .bind(name)
-      .all();
-
-    if (existingPages.length > 0) {
-      return c.json({ error: `Page "${name}" already exists` }, 409);
-    }
-
-    // Create new page if it doesn't exist
     const { results } = await c.env.DB.prepare(
       `insert into pages (name, content, encrypted) values (?, ?, ?) returning *,
       datetime(created_at, 'unixepoch') as created_at,
@@ -82,7 +70,36 @@ app.post("/api/pages/:name", async (c) => {
 
     return c.json(results[0], 201);
   } catch (err) {
-    console.error("Error creating page:", err);
+    if (err instanceof Error) {
+      console.error(
+        JSON.stringify({
+          level: "error",
+          message: "Failed to create page",
+          error: {
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+          },
+          context: {
+            pageName: name,
+            encrypted: encrypted,
+            contentLength: content.length,
+            requestId: c.req.header("cf-ray"), // Cloudflare request ID
+            userAgent: c.req.header("user-agent"),
+            timestamp: new Date().toISOString(),
+          },
+        })
+      );
+    }
+
+    // Check if it's a unique constraint violation
+    if (
+      err instanceof Error &&
+      err.message.includes("UNIQUE constraint failed")
+    ) {
+      return c.json({ error: `Page "${name}" already exists` }, 409);
+    }
+
     return c.json({ error: "Failed to create page" }, 500);
   }
 });
