@@ -41,7 +41,8 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to create page");
+          const errorData = (await response.json()) as { error?: string };
+          throw new Error(errorData.error || "Failed to create page");
         }
 
         const createdPage = (await response.json()) as Page;

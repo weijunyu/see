@@ -60,6 +60,18 @@ app.post("/api/pages/:name", async (c) => {
   }
 
   try {
+    // Check if page already exists
+    const { results: existingPages } = await c.env.DB.prepare(
+      `select id from pages where name = ?`
+    )
+      .bind(name)
+      .all();
+
+    if (existingPages.length > 0) {
+      return c.json({ error: `Page "${name}" already exists` }, 409);
+    }
+
+    // Create new page if it doesn't exist
     const { results } = await c.env.DB.prepare(
       `insert into pages (name, content, encrypted) values (?, ?, ?) returning *,
       datetime(created_at, 'unixepoch') as created_at,
