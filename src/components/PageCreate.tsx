@@ -13,6 +13,9 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
   const [creating, setCreating] = useState(false);
   const [usePassword, setUsePassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [expiresInHours, setExpiresInHours] = useState<number | undefined>(
+    undefined
+  );
 
   const handleCreatePage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +40,7 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
           body: JSON.stringify({
             content: contentToSend,
             encrypted: usePassword && password.trim() !== "",
+            expires_in_hours: expiresInHours,
           }),
         });
 
@@ -81,7 +85,7 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
           id="usePassword"
           checked={usePassword}
           onChange={(e) => setUsePassword(e.target.checked)}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
         />
         <label htmlFor="usePassword" className="text-sm font-medium">
           Password protect this page
@@ -103,6 +107,30 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
           />
         </div>
       )}
+
+      <div>
+        <label htmlFor="expires" className="block text-sm font-medium mb-2">
+          Auto-delete after (optional):
+        </label>
+        <select
+          id="expires"
+          value={expiresInHours || ""}
+          onChange={(e) =>
+            setExpiresInHours(
+              e.target.value ? Number(e.target.value) : undefined
+            )
+          }
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Never expire</option>
+          <option value="0.0167">1 minute</option>
+          <option value="0.0833">5 minutes</option>
+          <option value="1">1 hour</option>
+          <option value="24">1 day</option>
+          <option value="168">1 week</option>
+          <option value="720">1 month</option>
+        </select>
+      </div>
 
       <div className="flex gap-2">
         <button

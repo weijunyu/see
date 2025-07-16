@@ -5,4 +5,5 @@ export interface Page {
   encrypted: 0 | 1;
   created_at: string;
   updated_at: string;
+  deleted_at: string | null;
 }

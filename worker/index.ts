@@ -40,9 +40,9 @@ app.get("/api/pages/next-name", async (c) => {
       const counterValue = results[0]["counter_value"];
       const suggestedName = encodeBase26(counterValue);
 
-      // Check if page with this name already exists
+      // Check if page with this name already exists and is not expired
       const { results: existingPages } = await c.env.DB.prepare(
-        `SELECT id FROM pages WHERE name = ?`
+        `SELECT id FROM pages WHERE name = ? AND (deleted_at IS NULL OR deleted_at > unixepoch())`
       )
         .bind(suggestedName)
         .all();
@@ -81,19 +81,30 @@ app.get("/api/pages/next-name", async (c) => {
 });
 
 app.get("/api/query/", async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT * FROM Pages").all();
+  const { results } = await c.env.DB.prepare(
+    `SELECT *,
+      datetime(created_at, 'unixepoch') as created_at,
+      datetime(updated_at, 'unixepoch') as updated_at,
+      datetime(deleted_at, 'unixepoch') as deleted_at
+      FROM pages
+      WHERE deleted_at IS NULL OR deleted_at > unixepoch()`
+  ).all();
+
   return c.json(results);
 });
 
 app.get("/api/recents/", async (c) => {
   const fetchCount = c.req.query("count") ?? 10;
+
   const { results } = await c.env.DB.prepare(
-    `select *,
+    `SELECT *,
       datetime(created_at, 'unixepoch') as created_at,
-      datetime(updated_at, 'unixepoch') as updated_at
-      from pages
-      order by updated_at desc
-      limit ?`
+      datetime(updated_at, 'unixepoch') as updated_at,
+      datetime(deleted_at, 'unixepoch') as deleted_at
+      FROM pages
+      WHERE deleted_at IS NULL OR deleted_at > unixepoch()
+      ORDER BY updated_at DESC
+      LIMIT ?`
   )
     .bind(fetchCount)
     .all();
@@ -103,12 +114,14 @@ app.get("/api/recents/", async (c) => {
 
 app.get("/api/pages/:name", async (c) => {
   const name = c.req.param("name");
+
   const { results } = await c.env.DB.prepare(
-    `select *,
+    `SELECT *,
       datetime(created_at, 'unixepoch') as created_at,
-      datetime(updated_at, 'unixepoch') as updated_at
-      from pages
-      where name = ?`
+      datetime(updated_at, 'unixepoch') as updated_at,
+      datetime(deleted_at, 'unixepoch') as deleted_at
+      FROM pages
+      WHERE name = ? AND (deleted_at IS NULL OR deleted_at > unixepoch())`
   )
     .bind(name)
     .all();
@@ -122,53 +135,84 @@ app.get("/api/pages/:name", async (c) => {
 
 app.post("/api/pages/:name", async (c) => {
   const name = c.req.param("name");
-  const body: { content: string; encrypted?: boolean } = await c.req.json();
-  const { content, encrypted = false } = body;
+  const body: {
+    content: string;
+    encrypted?: boolean;
+    expires_in_hours?: number;
+  } = await c.req.json();
+  const { content, encrypted = false, expires_in_hours } = body;
 
   if (!content) {
     return c.json({ error: "Content is required" }, 400);
   }
 
   try {
-    const { results } = await c.env.DB.prepare(
-      `insert into pages (name, content, encrypted) values (?, ?, ?) returning *,
-      datetime(created_at, 'unixepoch') as created_at,
-      datetime(updated_at, 'unixepoch') as updated_at`
+    // 1 Check if page exists and is not expired
+    const { results: existingPages } = await c.env.DB.prepare(
+      `SELECT id FROM pages WHERE name = ? AND (deleted_at IS NULL OR deleted_at > unixepoch())`
     )
-      .bind(name, content, encrypted)
+      .bind(name)
+      .all();
+
+    if (existingPages.length > 0) {
+      // Page exists and is not expired, return conflict
+      return c.json({ error: `Page "${name}" already exists` }, 409);
+    }
+
+    // 2 Check if there's an expired page we can overwrite
+    const { results: expiredPages } = await c.env.DB.prepare(
+      `SELECT id FROM pages WHERE name = ? AND deleted_at IS NOT NULL AND deleted_at <= unixepoch()`
+    )
+      .bind(name)
+      .all();
+
+    if (expiredPages.length > 0) {
+      // Delete the expired page first
+      await c.env.DB.prepare(`DELETE FROM pages WHERE id = ?`)
+        .bind((expiredPages[0] as { id: number }).id)
+        .run();
+    }
+
+    // 3 Create the new page
+
+    // Calculate expiry timestamp if provided
+    let deleted_at = null;
+    if (expires_in_hours && expires_in_hours > 0) {
+      const expiryTime = Date.now() + expires_in_hours * 60 * 60 * 1000;
+      deleted_at = Math.floor(expiryTime / 1000); // Convert to Unix timestamp
+    }
+
+    const { results } = await c.env.DB.prepare(
+      `INSERT INTO pages (name, content, encrypted, deleted_at) VALUES (?, ?, ?, ?) RETURNING *,
+      datetime(created_at, 'unixepoch') as created_at,
+      datetime(updated_at, 'unixepoch') as updated_at,
+      datetime(deleted_at, 'unixepoch') as deleted_at`
+    )
+      .bind(name, content, encrypted, deleted_at)
       .all();
 
     return c.json(results[0], 201);
   } catch (err) {
-    if (err instanceof Error) {
-      console.error(
-        JSON.stringify({
-          level: "error",
-          message: "Failed to create page",
-          error: {
-            name: err.name,
-            message: err.message,
-            stack: err.stack,
-          },
-          context: {
-            pageName: name,
-            encrypted: encrypted,
-            contentLength: content.length,
-            requestId: c.req.header("cf-ray"), // Cloudflare request ID
-            userAgent: c.req.header("user-agent"),
-            timestamp: new Date().toISOString(),
-          },
-        })
-      );
-    }
-
-    // Check if it's a unique constraint violation
-    if (
-      err instanceof Error &&
-      err.message.includes("UNIQUE constraint failed")
-    ) {
-      return c.json({ error: `Page "${name}" already exists` }, 409);
-    }
+    console.error(
+      JSON.stringify({
+        level: "error",
+        message: "Failed to create page",
+        error: {
+          name: err instanceof Error ? err.name : "Unknown",
+          message: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined,
+        },
+        context: {
+          pageName: name,
+          encrypted: encrypted,
+          contentLength: content.length,
+          expiresInHours: expires_in_hours,
+          requestId: c.req.header("cf-ray"),
+          userAgent: c.req.header("user-agent"),
+          timestamp: new Date().toISOString(),
+        },
+      })
+    );
 
     return c.json({ error: "Failed to create page" }, 500);
   }
