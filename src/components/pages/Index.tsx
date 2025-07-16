@@ -13,7 +13,7 @@ export function Index() {
   );
 
   useEffect(() => {
-    fetch("/api/recents/?count=10")
+    fetch("/api/recents?count=10")
       .then((res) => res.json())
       .then((data: Page[]) => {
         setPages(data);
@@ -27,7 +27,7 @@ export function Index() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/pages/next-name")
+    fetch("/api/suggestions/next-name")
       .then((res) => res.json())
       .then((data: { value: string }) => {
         setSuggestedPageName(data.value);
