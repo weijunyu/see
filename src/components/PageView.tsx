@@ -2,6 +2,9 @@ import { useState } from "react";
 import { formatForDisplay } from "../lib/dates";
 import type { Page } from "../types";
 import { decryptContent } from "../lib/crypto";
+import { PageViewContent } from "./PageViewContent";
+import { PageViewDecryptForm } from "./PageViewDecryptForm";
+import { PageViewModeBar } from "./PageViewModeBar";
 
 interface Props {
   page: Page;
@@ -12,6 +15,12 @@ export function PageView({ page }: Props) {
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
   const [decryptError, setDecryptError] = useState<string | null>(null);
   const [decrypting, setDecrypting] = useState(false);
+
+  // Markdown tab state
+  const isMd = page.name.endsWith(".md");
+  const [viewMode, setViewMode] = useState<"plain" | "markdown">(
+    isMd ? "markdown" : "plain"
+  );
 
   const isEncrypted = page.encrypted;
 
@@ -33,6 +42,9 @@ export function PageView({ page }: Props) {
       }
     })();
   };
+
+  // Get the content to display (decrypted or plain)
+  const displayContent = isEncrypted ? decryptedContent : page.content;
 
   return (
     <>
@@ -56,44 +68,18 @@ export function PageView({ page }: Props) {
       </div>
 
       {Boolean(isEncrypted) && decryptedContent == null ? (
-        <div className="max-w-md">
-          <form onSubmit={handleDecrypt} className="space-y-4">
-            <div>
-              <label
-                htmlFor="decrypt-password"
-                className="block text-sm font-medium mb-2"
-              >
-                Enter password to view this page:
-              </label>
-              <input
-                type="password"
-                id="decrypt-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            {decryptError && (
-              <p className="text-red-600 text-sm">{decryptError}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={decrypting || !password.trim()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {decrypting ? "Decrypting..." : "Decrypt"}
-            </button>
-          </form>
-        </div>
+        <PageViewDecryptForm
+          password={password}
+          setPassword={setPassword}
+          decryptError={decryptError}
+          decrypting={decrypting}
+          handleDecrypt={handleDecrypt}
+        />
       ) : (
-        <div className="max-w-none">
-          <p className="whitespace-pre-wrap">
-            {isEncrypted ? decryptedContent : page.content}
-          </p>
-        </div>
+        <>
+          <PageViewContent viewMode={viewMode} content={displayContent} />
+          <PageViewModeBar viewMode={viewMode} setViewMode={setViewMode} />
+        </>
       )}
     </>
   );
