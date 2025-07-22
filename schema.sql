@@ -8,13 +8,11 @@ CREATE TABLE IF NOT EXISTS Pages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     content TEXT,
-    encrypted BOOLEAN DEFAULT FALSE,
     created_at INTEGER DEFAULT (unixepoch()),
     updated_at INTEGER DEFAULT (unixepoch())
 );
 CREATE INDEX IF NOT EXISTS idx_pages_name ON Pages(name);
 CREATE INDEX IF NOT EXISTS idx_pages_created_at ON Pages(created_at);
 CREATE INDEX IF NOT EXISTS idx_pages_updated_at ON Pages(updated_at);
-CREATE INDEX IF NOT EXISTS idx_pages_encrypted ON Pages(encrypted);
 
 INSERT INTO Pages (name, content) VALUES ('Welcome Page', 'Welcome to our application! This is a sample page with some content.');

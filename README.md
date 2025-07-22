@@ -4,12 +4,23 @@
 npm run dev
 ```
 
-## Database ops
+## Get started
+
+Set up database baseline
 
 ```bash
 # resets local database with schema.sql
 npm run schema:sync:dev
+```
 
-# resets prod database with schema.sql
-npm run schema:sync:prod
+Run migrations
+
+```bash
+npm run db:migrate:dev
+```
+
+### Local dev
+
+```bash
+npm run dev
 ```
