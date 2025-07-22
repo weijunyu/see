@@ -138,14 +138,14 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
           disabled={
             creating || !newContent.trim() || (usePassword && !password.trim())
           }
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 cursor-pointer disabled:cursor-not-allowed"
         >
           {creating ? "Creating..." : "Create"}
         </button>
         <button
           type="button"
           onClick={() => window.history.back()}
-          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 cursor-pointer"
         >
           Cancel
         </button>
