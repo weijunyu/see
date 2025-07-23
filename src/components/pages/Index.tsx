@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Page } from "../../types";
 import { Link } from "@tanstack/react-router";
 import { PageList } from "../PageList";
+import { generateRandomName } from "../../lib/pages";
 
 export function Index() {
   const [pages, setPages] = useState<Page[]>([]);
@@ -50,11 +51,10 @@ export function Index() {
 
   return (
     <>
-      <section>
-        <p></p>
-        {suggestedPageName && (
-          <p className="flex gap-1 mt-2">
-            Add content to a new page:
+      <section className="flex flex-row gap-x-2 justify-between items-center">
+        {suggestedPageName ? (
+          <p className="flex gap-1">
+            Create a new page here:{" "}
             <Link
               to="/$name"
               params={{ name: suggestedPageName }}
@@ -63,7 +63,17 @@ export function Index() {
               /{suggestedPageName}
             </Link>
           </p>
+        ) : (
+          <p className="min-w-0"></p>
         )}
+
+        <Link
+          to="/$name"
+          params={{ name: generateRandomName(4) }}
+          className="inline-block px-2  bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Random page
+        </Link>
       </section>
 
       {pages.length > 0 ? (
