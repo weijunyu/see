@@ -51,14 +51,14 @@ export function Index() {
 
   return (
     <>
-      <section className="flex flex-row gap-x-2 justify-between items-center">
+      <section className="flex flex-row flex-wrap gap-2 justify-between items-center">
         {suggestedPageName ? (
-          <p className="flex gap-1">
+          <p className="flex gap-1 w-full sm:w-auto">
             Create a new page here:{" "}
             <Link
               to="/$name"
               params={{ name: suggestedPageName }}
-              className="inline-block px-2  bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-block px-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               /{suggestedPageName}
             </Link>
@@ -70,7 +70,7 @@ export function Index() {
         <Link
           to="/$name"
           params={{ name: generateRandomName(4) }}
-          className="inline-block px-2  bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="inline-block px-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto text-center"
         >
           Random page
         </Link>
