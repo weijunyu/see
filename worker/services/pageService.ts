@@ -17,7 +17,12 @@ export class PageService {
   }
 
   async createPage(name: string, request: CreatePageRequest): Promise<Page> {
-    const { content, encrypted = false, expires_in_hours } = request;
+    const {
+      content,
+      encrypted = false,
+      expires_in_hours,
+      view_once_only: viewOnceOnly = null,
+    } = request;
 
     // Check if page exists and is not expired
     const pageExists = await this.db.checkPageExists(name);
@@ -38,6 +43,12 @@ export class PageService {
       deletedAt = Math.floor(expiryTime / 1000);
     }
 
-    return await this.db.createPage(name, content, encrypted, deletedAt);
+    return await this.db.createPage(
+      name,
+      content,
+      encrypted,
+      deletedAt,
+      viewOnceOnly
+    );
   }
 }

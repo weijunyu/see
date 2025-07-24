@@ -76,15 +76,16 @@ export class DatabaseService {
     name: string,
     content: string,
     encrypted: boolean,
-    deletedAt: number | null
+    deletedAt: number | null,
+    viewOnceOnly: boolean | null
   ): Promise<Page> {
     const { results } = await this.env.DB.prepare(
-      `INSERT INTO pages (name, content, encrypted, deleted_at) VALUES (?, ?, ?, ?) RETURNING *,
+      `INSERT INTO pages (name, content, encrypted, deleted_at, view_once_only) VALUES (?, ?, ?, ?, ?) RETURNING *,
       datetime(created_at, 'unixepoch') as created_at,
       datetime(updated_at, 'unixepoch') as updated_at,
       datetime(deleted_at, 'unixepoch') as deleted_at`
     )
-      .bind(name, content, encrypted, deletedAt)
+      .bind(name, content, encrypted, deletedAt, viewOnceOnly)
       .all();
 
     return results[0] as unknown as Page;

@@ -11,6 +11,7 @@ interface Props {
 export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
   const [newContent, setNewContent] = useState("");
   const [creating, setCreating] = useState(false);
+  const [viewOnceOnly, setViewOnceOnly] = useState(false);
   const [usePassword, setUsePassword] = useState(false);
   const [password, setPassword] = useState("");
   const [expiresInHours, setExpiresInHours] = useState<number | undefined>(
@@ -41,6 +42,7 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
             content: contentToSend,
             encrypted: usePassword && password.trim() !== "",
             expires_in_hours: expiresInHours,
+            view_once_only: viewOnceOnly,
           }),
         });
 
@@ -77,6 +79,19 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
           className="w-full h-48 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="viewOnceOnly"
+          checked={viewOnceOnly}
+          onChange={(e) => setViewOnceOnly(e.target.checked)}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+        ></input>
+        <label htmlFor="viewOnceOnly" className="text-sm font-medium">
+          View once only
+        </label>
       </div>
 
       <div className="flex items-center gap-2">

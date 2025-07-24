@@ -19,6 +19,8 @@ Run migrations
 npm run db:migrate:dev
 ```
 
+You can interact with the local sqlite database in the `.wrangler/state` folder.
+
 ### Local dev
 
 ```bash

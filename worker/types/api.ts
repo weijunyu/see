@@ -6,6 +6,7 @@ export interface CreatePageRequest {
   content: string;
   encrypted?: boolean;
   expires_in_hours?: number;
+  view_once_only?: boolean;
 }
 
 export interface Page {
