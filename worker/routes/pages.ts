@@ -15,6 +15,10 @@ pages.get("/:name", async (c) => {
 
     const page = await pageService.getPageByName(name);
 
+    if (page?.view_once_only) {
+      void pageService.deletePageLater(page, { wait: 2000 });
+    }
+
     if (!page) {
       return c.json({ error: "Page not found" }, 404);
     }

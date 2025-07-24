@@ -14,6 +14,7 @@ export interface Page {
   name: string;
   content: string;
   encrypted: 0 | 1;
+  view_once_only: 0 | 1 | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
