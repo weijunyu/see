@@ -25,6 +25,7 @@
     "marked": "^16.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "sanitize-html": "^2.17.0",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/sanitize-html": "^2.16.0",
     "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.31.0",
     "eslint-plugin-react-hooks": "^5.2.0",

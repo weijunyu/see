@@ -1,6 +1,7 @@
 import type { Page, CreatePageRequest } from "../types/api";
 import { DatabaseService } from "./database";
 import { logger } from "../utils/logger";
+import sanitizeHtml from "sanitize-html";
 
 export class PageService {
   constructor(private db: DatabaseService) {}
@@ -64,6 +65,9 @@ export class PageService {
       await this.db.deletePageById(expiredPage.id);
     }
 
+    // Sanitize content
+    const sanitizedContent = sanitizeHtml(content);
+
     // Calculate expiry timestamp if provided
     let deletedAt = null;
     if (expires_in_hours && expires_in_hours > 0) {
@@ -73,7 +77,7 @@ export class PageService {
 
     return await this.db.createPage(
       name,
-      content,
+      sanitizedContent,
       encrypted,
       deletedAt,
       viewOnceOnly
