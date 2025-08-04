@@ -11,7 +11,7 @@ export function Root() {
       </header>
 
       <main className="min-h-screen flex flex-row justify-center bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-slate-50">
-        <div className="box-border max-w-[800px] px-8 py-4">
+        <div className="max-w-[800px] px-8 pt-4 pb-16">
           <Outlet />
         </div>
         <TanStackRouterDevtools />

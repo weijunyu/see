@@ -14,7 +14,17 @@ export function PageViewContent({
       ) : (
         <div
           className="prose prose-slate lg:prose-lg dark:prose-invert"
-          dangerouslySetInnerHTML={{ __html: marked.parse(content || "") }}
+          dangerouslySetInnerHTML={{
+            __html: marked.parse(
+              (() => {
+                // When storing we sanitize MD so things like ">" are encoded as &gt;
+                // Decode HTML entities (like &lt; → < and &amp; → &) before parsing markdown
+                const div = document.createElement("div");
+                div.innerHTML = content || "";
+                return div.textContent || div.innerText || "";
+              })()
+            ),
+          }}
         />
       )}
     </div>
