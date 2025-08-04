@@ -49,19 +49,19 @@ export function PageView({ page }: Props) {
   return (
     <>
       <div className="mb-4">
-        <p className="text-gray-600 text-sm">
+        <p className="text-gray-600 dark:text-gray-200 text-sm">
           Created: {formatForDisplay(page.created_at)}
         </p>
-        <p className="text-gray-600 text-sm">
+        <p className="text-gray-600 dark:text-gray-200 text-sm">
           Updated: {formatForDisplay(page.updated_at)}
         </p>
         {page.deleted_at && (
-          <p className="text-orange-600 text-sm font-medium">
+          <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">
             ⏰ Expires: {formatForDisplay(page.deleted_at)}
           </p>
         )}
         {Boolean(isEncrypted) && (
-          <p className="text-blue-600 text-sm font-medium">
+          <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">
             🔒 This page is password protected
           </p>
         )}

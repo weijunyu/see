@@ -7,13 +7,13 @@ export function PageViewModeBar({
   setViewMode: (mode: "plain" | "markdown") => void;
 }) {
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-gray-100 border-t border-gray-300 flex justify-center py-2 z-10">
+    <div className="fixed bottom-0 left-0 w-full bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 flex justify-center py-2 z-10">
       <button
         className={clsx([
           "cursor-pointer px-4 py-2 mx-2 rounded-md",
           viewMode === "plain"
-            ? "bg-blue-600 text-white"
-            : "bg-white text-blue-600 border border-blue-600",
+            ? "bg-blue-600 text-white dark:bg-blue-600 dark:text-white"
+            : "bg-white text-blue-600 border border-blue-600 dark:bg-gray-800 dark:text-white dark:border-slate-700",
         ])}
         onClick={() => setViewMode("plain")}
         disabled={viewMode === "plain"}
@@ -24,8 +24,8 @@ export function PageViewModeBar({
         className={clsx([
           "cursor-pointer px-4 py-2 mx-2 rounded-md",
           viewMode === "markdown"
-            ? "bg-blue-600 text-white"
-            : "bg-white text-blue-600 border border-blue-600",
+            ? "bg-blue-600 text-white dark:bg-blue-600 dark:text-white"
+            : "bg-white text-blue-600 border border-blue-600 dark:bg-gray-800 dark:text-white dark:border-slate-700",
         ])}
         onClick={() => setViewMode("markdown")}
         disabled={viewMode === "markdown"}

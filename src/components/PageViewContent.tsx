@@ -13,7 +13,7 @@ export function PageViewContent({
         <p className="whitespace-pre-wrap">{content}</p>
       ) : (
         <div
-          className="prose prose-slate lg:prose-lg"
+          className="prose prose-slate lg:prose-lg dark:prose-invert"
           dangerouslySetInnerHTML={{ __html: marked.parse(content || "") }}
         />
       )}
