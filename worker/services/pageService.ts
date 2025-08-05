@@ -1,6 +1,5 @@
 import type { Page, CreatePageRequest } from "../types/api";
 import { DatabaseService } from "./database";
-import { logger } from "../utils/logger";
 import sanitizeHtml from "sanitize-html";
 
 export class PageService {
@@ -16,29 +15,6 @@ export class PageService {
 
   async getPageByName(name: string): Promise<Page | null> {
     return await this.db.getPageByName(name);
-  }
-
-  // Delete page after {wait} ms
-  // BUG: setTimeout not working in workers?
-  async deletePageLater(page: Page, options?: { wait: number }) {
-    const wait = (() => {
-      if (options?.wait) return options.wait;
-      return 2000;
-    })();
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        this.deletePage(page)
-          .then((res) => resolve(res))
-          .catch((err: Error) => {
-            logger.error(
-              "Failed to delete page in pageService > deletePageLater",
-              err
-            );
-            reject(err);
-          });
-      }, wait);
-    });
   }
 
   async deletePage(page: Page) {
