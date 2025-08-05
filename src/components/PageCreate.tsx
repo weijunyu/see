@@ -67,16 +67,19 @@ export function PageCreate({ name, onPageCreated, onPageCreateError }: Props) {
   };
 
   return (
-    <form onSubmit={handleCreatePage} className="space-y-4">
-      <div>
-        <label htmlFor="content" className="block text-sm font-medium mb-2">
+    <form
+      onSubmit={handleCreatePage}
+      className="flex flex-col gap-y-4 h-full box-border"
+    >
+      <div className="box-border flex-grow flex flex-col gap-y-2">
+        <label htmlFor="content" className="block text-sm font-medium">
           Add your content below. It will be available at /{name}
         </label>
         <textarea
           id="content"
           value={newContent}
           onChange={(e) => setNewContent(e.target.value)}
-          className="w-full h-48 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full flex-grow p-3 font-mono border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
       </div>

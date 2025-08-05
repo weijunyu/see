@@ -12,8 +12,8 @@ export function PageViewDecryptForm({
   handleDecrypt: (e: React.FormEvent) => void;
 }) {
   return (
-    <div className="max-w-md">
-      <form onSubmit={handleDecrypt} className="space-y-4">
+    <div className="max-w-md mx-auto">
+      <form onSubmit={handleDecrypt} className="flex flex-col gap-y-4">
         <div>
           <label
             htmlFor="decrypt-password"

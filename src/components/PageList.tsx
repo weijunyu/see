@@ -8,7 +8,7 @@ interface Props {
 
 export function PageList({ pages }: Props) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-y-4">
       {pages.map((page) => (
         <div
           key={page.id}
