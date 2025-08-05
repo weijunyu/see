@@ -1,5 +1,5 @@
 import { pageRoute } from "../../routes.tsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Page as PageType } from "../../types/index.ts";
 import { PageCreate } from "../PageCreate.tsx";
 import { PageView } from "../PageView.tsx";
@@ -11,7 +11,11 @@ export function Page() {
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
+  const hasFetchedPage = useRef(false);
   useEffect(() => {
+    if (hasFetchedPage.current) return;
+    hasFetchedPage.current = true;
+
     if (name) {
       // Fetch page by name
       fetch(`/api/pages/${encodeURIComponent(name)}`)

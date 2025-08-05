@@ -34,18 +34,24 @@ export class DatabaseService {
   }
 
   async getPageByName(name: string): Promise<Page | null> {
-    const { results } = await this.env.DB.prepare(
-      `SELECT *,
+    const readStatement = this.env.DB.prepare(`SELECT *,
         datetime(created_at, 'unixepoch') as created_at,
         datetime(updated_at, 'unixepoch') as updated_at,
         datetime(deleted_at, 'unixepoch') as deleted_at
         FROM pages
-        WHERE name = ? AND (deleted_at IS NULL OR deleted_at > unixepoch())`
-    )
-      .bind(name)
-      .all();
+        WHERE name = ? AND (deleted_at IS NULL OR deleted_at > unixepoch())`);
+    const deleteStatement = this.env.DB.prepare(
+      `delete from pages where name = ? and view_once_only = 1`
+    );
 
-    return results.length > 0 ? (results[0] as unknown as Page) : null;
+    const batchResult = await this.env.DB.batch([
+      readStatement.bind(name),
+      deleteStatement.bind(name),
+    ]);
+
+    const readResults = batchResult[0].results as Page[];
+
+    return readResults[0] ? readResults[0] : null;
   }
 
   async checkPageExists(name: string): Promise<boolean> {
