@@ -10,7 +10,9 @@ export class DatabaseService {
         datetime(updated_at, 'unixepoch') as updated_at,
         datetime(deleted_at, 'unixepoch') as deleted_at
         FROM pages
-        WHERE deleted_at IS NULL OR deleted_at > unixepoch()
+        WHERE (deleted_at IS NULL OR deleted_at > unixepoch())
+        AND view_once_only = 0
+        AND encrypted = 0
         ORDER BY updated_at DESC
         LIMIT ?`
     )
