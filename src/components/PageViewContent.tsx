@@ -10,7 +10,7 @@ export function PageViewContent({
   return (
     <div className="max-w-none min-h-[200px]">
       {viewMode === "plain" ? (
-        <p className="whitespace-pre-wrap">{content}</p>
+        <p className="whitespace-pre-wrap font-mono">{content}</p>
       ) : (
         <div
           className="prose prose-slate lg:prose-lg dark:prose-invert"
